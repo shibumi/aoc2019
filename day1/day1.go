@@ -8,26 +8,32 @@ import (
 	"strconv"
 )
 
-// calculate fuel by mass
 func calculateFuel(mass int) (result int) {
 	result = int(mass/3) - 2
 	return
 }
 
+func calculateFuelOfFuel(fuel int, fuels *[]int) (result int) {
+	fuel = calculateFuel(fuel)
+	if fuel <= 0 {
+		return 0
+	}
+	*fuels = append(*fuels, fuel)
+	return calculateFuelOfFuel(fuel, fuels)
+}
+
 func main() {
-	// Read input file
+
 	file, err := os.Open("input")
 	if err != nil {
 		log.Fatal(err)
 	}
-	// make sure to close file after end of function
+
 	defer file.Close()
 
-	// create slice for modules
 	var modules []int
 	scanner := bufio.NewScanner(file)
 
-	// scan file by line and cast to integer
 	for scanner.Scan() {
 		number, err := strconv.Atoi(scanner.Text())
 		if err != nil {
@@ -35,7 +41,12 @@ func main() {
 		}
 		modules = append(modules, calculateFuel(int(number)))
 	}
-	// calculate sum
+
+	cpy := make([]int, len(modules))
+	copy(cpy, modules)
+	for _, fuel := range cpy {
+		calculateFuelOfFuel(fuel, &modules)
+	}
 	var sum int
 	for _, n := range modules {
 		sum += n
