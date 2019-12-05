@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-func parseOpcodes(opcodes []int) {
+func parseOpcodes(opcodes []int) bool {
 	for i := 0; i <= len(opcodes); i = i + 4 {
 		switch opcodes[i] {
 		case 1:
@@ -23,12 +23,16 @@ func parseOpcodes(opcodes []int) {
 			result := opcodes[i+3]
 			opcodes[result] = opcodes[x] * opcodes[y]
 		case 99:
-			fmt.Println(opcodes)
-			return
+			if opcodes[0] == 19690720 {
+				return true
+			}
+			return false
 		default:
-			log.Fatalf("We shouldn't be here: index: %v, value: %v, opcodes: %v", i, opcodes[i], opcodes)
+			// if we are here, we got an invalid opcode
+			return false
 		}
 	}
+	return false
 }
 
 func main() {
@@ -52,7 +56,16 @@ func main() {
 		}
 	}
 	// modify opcodes
-	opcodes[1] = 12
-	opcodes[2] = 2
-	parseOpcodes(opcodes)
+	for i := 0; i <= 99; i++ {
+		for j := 0; j <= 99; j++ {
+			opcodesCopy := make([]int, len(opcodes))
+			copy(opcodesCopy, opcodes)
+			opcodesCopy[1] = i
+			opcodesCopy[2] = j
+			if parseOpcodes(opcodesCopy) {
+				fmt.Println("We've found a solution: ")
+				fmt.Println(i*100 + j)
+			}
+		}
+	}
 }
