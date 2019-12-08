@@ -15,22 +15,6 @@ type point struct {
 	y int
 }
 
-func equal(x point, y point) bool {
-	if x.x == y.x && x.y == y.y {
-		return true
-	}
-	return false
-}
-
-func contains(coordinate point, coordinates []point) bool {
-	for _, e := range coordinates {
-		if equal(e, coordinate) {
-			return true
-		}
-	}
-	return false
-}
-
 func absInt(x int) int {
 	if x < 0 {
 		return -x
@@ -38,28 +22,23 @@ func absInt(x int) int {
 	return x
 }
 
-func distance(intersections []point) {
-	var distances []int
-	for _, p := range intersections {
-		result := absInt(p.x) + absInt(p.y)
-		distances = append(distances, result)
-	}
-	var solution int
-	for i, p := range distances {
-		if i == 0 {
-			solution = p
-		}
-		if p < solution {
-			solution = p
+func distance(intersections map[point]int) {
+	defer util.Elapsed("distance")()
+	var result int
+	for _, v := range intersections {
+		if result == 0 {
+			result = v
+		} else if v < result {
+			result = v
 		}
 	}
-	log.Println(solution)
+	log.Println(result)
 }
 
 func calculateWirePositions(input [][]string) {
 	defer util.Elapsed("calculateWirePositions")()
-	var coordinates []point
-	var intersections []point
+	coordinates := make(map[point]int)
+	intersections := make(map[point]int)
 	for index, wire := range input {
 		x := 0
 		y := 0
@@ -73,11 +52,11 @@ func calculateWirePositions(input [][]string) {
 				for i := 0; i <= op; i++ {
 					x++
 					if index == 1 {
-						if contains(point{x: x, y: y}, coordinates) {
-							intersections = append(intersections, point{x: x, y: y})
+						if val, ok := coordinates[point{x: x, y: y}]; ok {
+							intersections[point{x: x, y: y}] = val
 						}
 					} else {
-						coordinates = append(coordinates, point{x: x, y: y})
+						coordinates[point{x: x, y: y}] = absInt(x) + absInt(y)
 					}
 				}
 			case "L":
@@ -88,11 +67,11 @@ func calculateWirePositions(input [][]string) {
 				for i := 0; i <= op; i++ {
 					x--
 					if index == 1 {
-						if contains(point{x: x, y: y}, coordinates) {
-							intersections = append(intersections, point{x: x, y: y})
+						if val, ok := coordinates[point{x: x, y: y}]; ok {
+							intersections[point{x: x, y: y}] = val
 						}
 					} else {
-						coordinates = append(coordinates, point{x: x, y: y})
+						coordinates[point{x: x, y: y}] = absInt(x) + absInt(y)
 					}
 				}
 			case "U":
@@ -103,11 +82,11 @@ func calculateWirePositions(input [][]string) {
 				for i := 0; i <= op; i++ {
 					y++
 					if index == 1 {
-						if contains(point{x: x, y: y}, coordinates) {
-							intersections = append(intersections, point{x: x, y: y})
+						if val, ok := coordinates[point{x: x, y: y}]; ok {
+							intersections[point{x: x, y: y}] = val
 						}
 					} else {
-						coordinates = append(coordinates, point{x: x, y: y})
+						coordinates[point{x: x, y: y}] = absInt(x) + absInt(y)
 					}
 				}
 			case "D":
@@ -118,11 +97,13 @@ func calculateWirePositions(input [][]string) {
 				for i := 0; i <= op; i++ {
 					y--
 					if index == 1 {
-						if contains(point{x: x, y: y}, coordinates) {
-							intersections = append(intersections, point{x: x, y: y})
+						if index == 1 {
+							if val, ok := coordinates[point{x: x, y: y}]; ok {
+								intersections[point{x: x, y: y}] = val
+							}
+						} else {
+							coordinates[point{x: x, y: y}] = absInt(x) + absInt(y)
 						}
-					} else {
-						coordinates = append(coordinates, point{x: x, y: y})
 					}
 				}
 			default:
