@@ -32,7 +32,10 @@ func calculateDistance(input []coordinates) {
 }
 
 func findIntersection(input [][]coordinates) {
+	log.Println("start calculating intersections")
 	var intersections []coordinates
+	log.Println("len(input[0]): ", len(input[0]))
+	log.Println("len(input[1]): ", len(input[1]))
 	for _, coordinate := range input[0] {
 		for _, comparedCoord := range input[1] {
 			if reflect.DeepEqual(coordinate, comparedCoord) {
@@ -40,6 +43,7 @@ func findIntersection(input [][]coordinates) {
 			}
 		}
 	}
+	log.Println("Found intersections")
 	calculateDistance(intersections)
 }
 
@@ -56,32 +60,44 @@ func calculateWirePositions(input [][]string) {
 				if err != nil {
 					log.Println("Received invalid opcode")
 				}
-				x += op
+				for i := 0; i <= op; i++ {
+					x++
+					savedOpcodes = append(savedOpcodes, coordinates{x: x, y: y})
+				}
 			case "L":
 				op, err := strconv.Atoi(opcode[1:])
 				if err != nil {
 					log.Println("Received invalid opcode")
 				}
-				x -= op
+				for i := 0; i <= op; i++ {
+					x--
+					savedOpcodes = append(savedOpcodes, coordinates{x: x, y: y})
+				}
 			case "U":
 				op, err := strconv.Atoi(opcode[1:])
 				if err != nil {
 					log.Println("Received invalid opcode")
 				}
-				y += op
+				for i := 0; i <= op; i++ {
+					y++
+					savedOpcodes = append(savedOpcodes, coordinates{x: x, y: y})
+				}
 			case "D":
 				op, err := strconv.Atoi(opcode[1:])
 				if err != nil {
 					log.Println("Received invalid opcode")
 				}
-				y -= op
+				for i := 0; i <= op; i++ {
+					y--
+					savedOpcodes = append(savedOpcodes, coordinates{x: x, y: y})
+				}
 			default:
 				log.Println("We've read an invalid opcode")
 			}
-			savedOpcodes = append(savedOpcodes, coordinates{x: x, y: y})
 		}
 		wireOpcodes = append(wireOpcodes, savedOpcodes)
 	}
+	log.Println(wireOpcodes)
 	findIntersection(wireOpcodes)
 }
 
