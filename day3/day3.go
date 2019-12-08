@@ -6,6 +6,8 @@ import (
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/shibumi/aoc2019/util"
 )
 
 type point struct {
@@ -55,6 +57,7 @@ func distance(intersections []point) {
 }
 
 func calculateWirePositions(input [][]string) {
+	defer util.Elapsed("calculateWirePositions")()
 	var coordinates []point
 	var intersections []point
 	for index, wire := range input {
@@ -127,7 +130,6 @@ func calculateWirePositions(input [][]string) {
 			}
 		}
 	}
-	log.Println(intersections)
 	distance(intersections)
 }
 
