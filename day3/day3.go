@@ -2,8 +2,8 @@ package main
 
 import (
 	"bufio"
-	"fmt"
 	"log"
+	"math"
 	"os"
 	"reflect"
 	"strconv"
@@ -15,6 +15,22 @@ type coordinates struct {
 	y int
 }
 
+func calculateDistance(input []coordinates) {
+	var solution float64
+	var results []float64
+	for _, coordinate := range input {
+		results = append(results, math.Abs(float64(coordinate.x+coordinate.y)))
+	}
+	for _, e := range results {
+		if solution == 0 {
+			solution = e
+		} else if e < solution {
+			solution = e
+		}
+	}
+	log.Println(solution)
+}
+
 func findIntersection(input [][]coordinates) {
 	var intersections []coordinates
 	for _, coordinate := range input[0] {
@@ -24,15 +40,15 @@ func findIntersection(input [][]coordinates) {
 			}
 		}
 	}
-	fmt.Println(intersections)
+	calculateDistance(intersections)
 }
 
-func calculateWirePositionss(input [][]string) {
+func calculateWirePositions(input [][]string) {
 	var wireOpcodes [][]coordinates
-	var savedOpcodes []coordinates
 	for _, wire := range input {
 		x := 0
 		y := 0
+		var savedOpcodes []coordinates
 		for _, opcode := range wire {
 			switch string(opcode[0]) {
 			case "R":
@@ -66,6 +82,7 @@ func calculateWirePositionss(input [][]string) {
 		}
 		wireOpcodes = append(wireOpcodes, savedOpcodes)
 	}
+	findIntersection(wireOpcodes)
 }
 
 func main() {
@@ -91,5 +108,5 @@ func main() {
 		}
 		counter++
 	}
-	calculateWirePositionss(opcodes)
+	calculateWirePositions(opcodes)
 }
