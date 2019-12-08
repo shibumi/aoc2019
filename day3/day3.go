@@ -57,7 +57,7 @@ func distance(intersections []point) {
 func calculateWirePositions(input [][]string) {
 	var coordinates []point
 	var intersections []point
-	for _, wire := range input {
+	for index, wire := range input {
 		x := 0
 		y := 0
 		for _, opcode := range wire {
@@ -69,8 +69,10 @@ func calculateWirePositions(input [][]string) {
 				}
 				for i := 0; i <= op; i++ {
 					x++
-					if contains(point{x: x, y: y}, coordinates) {
-						intersections = append(intersections, point{x: x, y: y})
+					if index == 1 {
+						if contains(point{x: x, y: y}, coordinates) {
+							intersections = append(intersections, point{x: x, y: y})
+						}
 					} else {
 						coordinates = append(coordinates, point{x: x, y: y})
 					}
@@ -82,8 +84,10 @@ func calculateWirePositions(input [][]string) {
 				}
 				for i := 0; i <= op; i++ {
 					x--
-					if contains(point{x: x, y: y}, coordinates) {
-						intersections = append(intersections, point{x: x, y: y})
+					if index == 1 {
+						if contains(point{x: x, y: y}, coordinates) {
+							intersections = append(intersections, point{x: x, y: y})
+						}
 					} else {
 						coordinates = append(coordinates, point{x: x, y: y})
 					}
@@ -95,8 +99,10 @@ func calculateWirePositions(input [][]string) {
 				}
 				for i := 0; i <= op; i++ {
 					y++
-					if contains(point{x: x, y: y}, coordinates) {
-						intersections = append(intersections, point{x: x, y: y})
+					if index == 1 {
+						if contains(point{x: x, y: y}, coordinates) {
+							intersections = append(intersections, point{x: x, y: y})
+						}
 					} else {
 						coordinates = append(coordinates, point{x: x, y: y})
 					}
@@ -108,8 +114,10 @@ func calculateWirePositions(input [][]string) {
 				}
 				for i := 0; i <= op; i++ {
 					y--
-					if contains(point{x: x, y: y}, coordinates) {
-						intersections = append(intersections, point{x: x, y: y})
+					if index == 1 {
+						if contains(point{x: x, y: y}, coordinates) {
+							intersections = append(intersections, point{x: x, y: y})
+						}
 					} else {
 						coordinates = append(coordinates, point{x: x, y: y})
 					}
@@ -119,6 +127,7 @@ func calculateWirePositions(input [][]string) {
 			}
 		}
 	}
+	log.Println(intersections)
 	distance(intersections)
 }
 
