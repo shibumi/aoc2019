@@ -36,7 +36,10 @@ func distance(intersections map[point]int) {
 }
 
 func calculateWirePositions(input [][]string) {
+	// this is for measuring runtime of this function
 	defer util.Elapsed("calculateWirePositions")()
+	// we use hashmaps, with the point as key and the distance as value
+	// with this approach we can easily search for an insection and compare the distance afterwards
 	coordinates := make(map[point]int)
 	intersections := make(map[point]int)
 	for index, wire := range input {
