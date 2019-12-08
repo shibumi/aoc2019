@@ -3,57 +3,63 @@ package main
 import (
 	"bufio"
 	"log"
-	"math"
 	"os"
-	"reflect"
 	"strconv"
 	"strings"
 )
 
-type coordinates struct {
+type point struct {
 	x int
 	y int
 }
 
-func calculateDistance(input []coordinates) {
-	var solution float64
-	var results []float64
-	for _, coordinate := range input {
-		results = append(results, math.Abs(float64(coordinate.x+coordinate.y)))
+func equal(x point, y point) bool {
+	if x.x == y.x && x.y == y.y {
+		return true
 	}
-	for _, e := range results {
-		if solution == 0 {
-			solution = e
-		} else if e < solution {
-			solution = e
+	return false
+}
+
+func contains(coordinate point, coordinates []point) bool {
+	for _, e := range coordinates {
+		if equal(e, coordinate) {
+			return true
+		}
+	}
+	return false
+}
+
+func absInt(x int) int {
+	if x < 0 {
+		return -x
+	}
+	return x
+}
+
+func distance(intersections []point) {
+	var distances []int
+	for _, p := range intersections {
+		result := absInt(p.x) + absInt(p.y)
+		distances = append(distances, result)
+	}
+	var solution int
+	for i, p := range distances {
+		if i == 0 {
+			solution = p
+		}
+		if p < solution {
+			solution = p
 		}
 	}
 	log.Println(solution)
 }
 
-func findIntersection(input [][]coordinates) {
-	log.Println("start calculating intersections")
-	var intersections []coordinates
-	log.Println("len(input[0]): ", len(input[0]))
-	log.Println("len(input[1]): ", len(input[1]))
-	for _, coordinate := range input[0] {
-		for _, comparedCoord := range input[1] {
-			if reflect.DeepEqual(coordinate, comparedCoord) {
-				intersections = append(intersections, coordinate)
-			}
-		}
-	}
-	log.Println("Found intersections")
-	calculateDistance(intersections)
-}
-
-// This solution is way to inefficient.. I think I will restart from scratch :S
 func calculateWirePositions(input [][]string) {
-	var wireOpcodes [][]coordinates
+	var coordinates []point
+	var intersections []point
 	for _, wire := range input {
 		x := 0
 		y := 0
-		var savedOpcodes []coordinates
 		for _, opcode := range wire {
 			switch string(opcode[0]) {
 			case "R":
@@ -63,7 +69,11 @@ func calculateWirePositions(input [][]string) {
 				}
 				for i := 0; i <= op; i++ {
 					x++
-					savedOpcodes = append(savedOpcodes, coordinates{x: x, y: y})
+					if contains(point{x: x, y: y}, coordinates) {
+						intersections = append(intersections, point{x: x, y: y})
+					} else {
+						coordinates = append(coordinates, point{x: x, y: y})
+					}
 				}
 			case "L":
 				op, err := strconv.Atoi(opcode[1:])
@@ -72,7 +82,11 @@ func calculateWirePositions(input [][]string) {
 				}
 				for i := 0; i <= op; i++ {
 					x--
-					savedOpcodes = append(savedOpcodes, coordinates{x: x, y: y})
+					if contains(point{x: x, y: y}, coordinates) {
+						intersections = append(intersections, point{x: x, y: y})
+					} else {
+						coordinates = append(coordinates, point{x: x, y: y})
+					}
 				}
 			case "U":
 				op, err := strconv.Atoi(opcode[1:])
@@ -81,7 +95,11 @@ func calculateWirePositions(input [][]string) {
 				}
 				for i := 0; i <= op; i++ {
 					y++
-					savedOpcodes = append(savedOpcodes, coordinates{x: x, y: y})
+					if contains(point{x: x, y: y}, coordinates) {
+						intersections = append(intersections, point{x: x, y: y})
+					} else {
+						coordinates = append(coordinates, point{x: x, y: y})
+					}
 				}
 			case "D":
 				op, err := strconv.Atoi(opcode[1:])
@@ -90,16 +108,18 @@ func calculateWirePositions(input [][]string) {
 				}
 				for i := 0; i <= op; i++ {
 					y--
-					savedOpcodes = append(savedOpcodes, coordinates{x: x, y: y})
+					if contains(point{x: x, y: y}, coordinates) {
+						intersections = append(intersections, point{x: x, y: y})
+					} else {
+						coordinates = append(coordinates, point{x: x, y: y})
+					}
 				}
 			default:
 				log.Println("We've read an invalid opcode")
 			}
 		}
-		wireOpcodes = append(wireOpcodes, savedOpcodes)
 	}
-	log.Println(wireOpcodes)
-	findIntersection(wireOpcodes)
+	distance(intersections)
 }
 
 func main() {
@@ -111,6 +131,7 @@ func main() {
 	defer file.Close()
 
 	// initialize a 2D slice
+	// This solution is limited to two lines output
 	opcodes := [][]string{
 		{},
 		{},
@@ -119,7 +140,6 @@ func main() {
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		line := scanner.Text()
-
 		for _, e := range strings.Split(line, ",") {
 			opcodes[counter] = append(opcodes[counter], e)
 		}
