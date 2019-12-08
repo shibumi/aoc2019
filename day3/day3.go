@@ -47,6 +47,7 @@ func findIntersection(input [][]coordinates) {
 	calculateDistance(intersections)
 }
 
+// This solution is way to inefficient.. I think I will restart from scratch :S
 func calculateWirePositions(input [][]string) {
 	var wireOpcodes [][]coordinates
 	for _, wire := range input {
