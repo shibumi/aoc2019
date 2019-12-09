@@ -100,13 +100,11 @@ func calculateWirePositions(input [][]string) {
 				for i := 0; i <= op; i++ {
 					y--
 					if index == 1 {
-						if index == 1 {
-							if val, ok := coordinates[point{x: x, y: y}]; ok {
-								intersections[point{x: x, y: y}] = val
-							}
-						} else {
-							coordinates[point{x: x, y: y}] = absInt(x) + absInt(y)
+						if val, ok := coordinates[point{x: x, y: y}]; ok {
+							intersections[point{x: x, y: y}] = val
 						}
+					} else {
+						coordinates[point{x: x, y: y}] = absInt(x) + absInt(y)
 					}
 				}
 			default:
