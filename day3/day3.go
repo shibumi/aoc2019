@@ -22,6 +22,7 @@ func intersection(wirepath1 map[point]int, wirepath2 map[point]int) {
 	for k, v := range wirepath1 {
 		if val, ok := wirepath2[k]; ok {
 			if _, fine := intersections[k]; !fine {
+				log.Println(k, v, val, v+val)
 				intersections[k] = val + v
 			}
 		}
@@ -59,7 +60,7 @@ func calculateWirePositions(input [][]string) {
 			switch string(opcode[0]) {
 			case "R":
 				op, _ := splitOpcode(opcode)
-				for i := 0; i <= op; i++ {
+				for i := 0; i < op; i++ {
 					x++
 					sum++
 					if index == 0 {
@@ -76,7 +77,7 @@ func calculateWirePositions(input [][]string) {
 				}
 			case "L":
 				op, _ := splitOpcode(opcode)
-				for i := 0; i <= op; i++ {
+				for i := 0; i < op; i++ {
 					x--
 					sum++
 					if index == 0 {
@@ -93,7 +94,7 @@ func calculateWirePositions(input [][]string) {
 				}
 			case "U":
 				op, _ := splitOpcode(opcode)
-				for i := 0; i <= op; i++ {
+				for i := 0; i < op; i++ {
 					y++
 					sum++
 					if index == 0 {
@@ -110,7 +111,7 @@ func calculateWirePositions(input [][]string) {
 				}
 			case "D":
 				op, _ := splitOpcode(opcode)
-				for i := 0; i <= op; i++ {
+				for i := 0; i < op; i++ {
 					y--
 					sum++
 					if index == 0 {
