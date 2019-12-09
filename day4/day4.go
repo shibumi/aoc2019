@@ -27,17 +27,28 @@ func checkNeverDecrease(n int) bool {
 
 // ruleOfTwo hehe.. I like this star wars metapher.
 func ruleOfTwo(n int) bool {
+	var exit bool
+	var exception bool
 	s := strconv.Itoa(n)
 	for _, e := range s {
 		var counter uint
-		for _, d := range s {
+		for i, d := range s {
 			if e == d {
 				counter++
 			}
 			if counter > 2 {
-				return false
+				exit = true
+			}
+			if i == len(s)-1 && counter == 2 {
+				exception = true
 			}
 		}
+	}
+	if exception {
+		return true
+	}
+	if exit {
+		return false
 	}
 	return true
 }
@@ -56,10 +67,9 @@ func main() {
 	for i := 183564; i <= 657474; i++ {
 		if checkNeighborship(i) {
 			if checkNeverDecrease(i) {
-				result++
-				// if ruleOfTwo(i) {
-				// 	result++
-				// }
+				if ruleOfTwo(i) {
+					result++
+				}
 			}
 		}
 	}
