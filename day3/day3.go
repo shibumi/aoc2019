@@ -15,16 +15,17 @@ type point struct {
 	y int
 }
 
-func absInt(x int) int {
-	if x < 0 {
-		return -x
-	}
-	return x
-}
-
-func distance(intersections map[point]int) {
-	defer util.Elapsed("distance")()
+func intersection(wirepath1 map[point]int, wirepath2 map[point]int) {
+	defer util.Elapsed("intersection")()
+	intersections := make(map[point]int)
 	var result int
+	for k, v := range wirepath1 {
+		if val, ok := wirepath2[k]; ok {
+			if _, fine := intersections[k]; !fine {
+				intersections[k] = val + v
+			}
+		}
+	}
 	for _, v := range intersections {
 		if result == 0 {
 			result = v
@@ -32,7 +33,15 @@ func distance(intersections map[point]int) {
 			result = v
 		}
 	}
-	log.Println(result)
+	log.Println("Solution: ", result)
+}
+
+func splitOpcode(s string) (op int, err error) {
+	op, err = strconv.Atoi(s[1:])
+	if err != nil {
+		log.Println("Received invalid opcode")
+	}
+	return
 }
 
 func calculateWirePositions(input [][]string) {
@@ -40,71 +49,80 @@ func calculateWirePositions(input [][]string) {
 	defer util.Elapsed("calculateWirePositions")()
 	// we use hashmaps, with the point as key and the distance as value
 	// with this approach we can easily search for an insection and compare the distance afterwards
-	coordinates := make(map[point]int)
-	intersections := make(map[point]int)
+	wirepath1 := make(map[point]int)
+	wirepath2 := make(map[point]int)
 	for index, wire := range input {
-		x := 0
-		y := 0
+		var x int
+		var y int
+		var sum int
 		for _, opcode := range wire {
 			switch string(opcode[0]) {
 			case "R":
-				op, err := strconv.Atoi(opcode[1:])
-				if err != nil {
-					log.Println("Received invalid opcode")
-				}
+				op, _ := splitOpcode(opcode)
 				for i := 0; i <= op; i++ {
 					x++
-					if index == 1 {
-						if val, ok := coordinates[point{x: x, y: y}]; ok {
-							intersections[point{x: x, y: y}] = val
+					sum++
+					if index == 0 {
+						if _, ok := wirepath1[point{x: x, y: y}]; !ok {
+							wirepath1[point{x: x, y: y}] = sum
+						}
+					} else if index == 1 {
+						if _, ok := wirepath2[point{x: x, y: y}]; !ok {
+							wirepath2[point{x: x, y: y}] = sum
 						}
 					} else {
-						coordinates[point{x: x, y: y}] = absInt(x) + absInt(y)
+						log.Fatal("Received more than two wirepaths")
 					}
 				}
 			case "L":
-				op, err := strconv.Atoi(opcode[1:])
-				if err != nil {
-					log.Println("Received invalid opcode")
-				}
+				op, _ := splitOpcode(opcode)
 				for i := 0; i <= op; i++ {
 					x--
-					if index == 1 {
-						if val, ok := coordinates[point{x: x, y: y}]; ok {
-							intersections[point{x: x, y: y}] = val
+					sum++
+					if index == 0 {
+						if _, ok := wirepath1[point{x: x, y: y}]; !ok {
+							wirepath1[point{x: x, y: y}] = sum
+						}
+					} else if index == 1 {
+						if _, ok := wirepath2[point{x: x, y: y}]; !ok {
+							wirepath2[point{x: x, y: y}] = sum
 						}
 					} else {
-						coordinates[point{x: x, y: y}] = absInt(x) + absInt(y)
+						log.Fatal("Received more than two wirepaths")
 					}
 				}
 			case "U":
-				op, err := strconv.Atoi(opcode[1:])
-				if err != nil {
-					log.Println("Received invalid opcode")
-				}
+				op, _ := splitOpcode(opcode)
 				for i := 0; i <= op; i++ {
 					y++
-					if index == 1 {
-						if val, ok := coordinates[point{x: x, y: y}]; ok {
-							intersections[point{x: x, y: y}] = val
+					sum++
+					if index == 0 {
+						if _, ok := wirepath1[point{x: x, y: y}]; !ok {
+							wirepath1[point{x: x, y: y}] = sum
+						}
+					} else if index == 1 {
+						if _, ok := wirepath2[point{x: x, y: y}]; !ok {
+							wirepath2[point{x: x, y: y}] = sum
 						}
 					} else {
-						coordinates[point{x: x, y: y}] = absInt(x) + absInt(y)
+						log.Fatal("Received more than two wirepaths")
 					}
 				}
 			case "D":
-				op, err := strconv.Atoi(opcode[1:])
-				if err != nil {
-					log.Println("Received invalid opcode")
-				}
+				op, _ := splitOpcode(opcode)
 				for i := 0; i <= op; i++ {
 					y--
-					if index == 1 {
-						if val, ok := coordinates[point{x: x, y: y}]; ok {
-							intersections[point{x: x, y: y}] = val
+					sum++
+					if index == 0 {
+						if _, ok := wirepath1[point{x: x, y: y}]; !ok {
+							wirepath1[point{x: x, y: y}] = sum
+						}
+					} else if index == 1 {
+						if _, ok := wirepath2[point{x: x, y: y}]; !ok {
+							wirepath2[point{x: x, y: y}] = sum
 						}
 					} else {
-						coordinates[point{x: x, y: y}] = absInt(x) + absInt(y)
+						log.Fatal("Received more than two wirepaths")
 					}
 				}
 			default:
@@ -112,7 +130,7 @@ func calculateWirePositions(input [][]string) {
 			}
 		}
 	}
-	distance(intersections)
+	intersection(wirepath1, wirepath2)
 }
 
 func main() {
